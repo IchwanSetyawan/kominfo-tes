@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Stats</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #courseChart, #mentorFeeChart {
+            max-width: 600px;
+            max-height: 300px;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Course Statistics</h1>
+    <canvas id="courseChart" width="600" height="300"></canvas>
+    <canvas id="mentorFeeChart" width="600" height="300"></canvas>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:8000/api/course/soal-7')
+                .then(response => response.json())
+                .then(data => {
+                    const courseNames = data.map(item => item.course_name);
+                    const jumlahPeserta = data.map(item => item.jumlah_peserta);
+
+                    const ctx1 = document.getElementById('courseChart').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: courseNames,
+                            datasets: [{
+                                label: 'Jumlah Peserta',
+                                data: jumlahPeserta,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching data for courses:', error));
+
+            fetch('http://localhost:8000/api/course/soal-8')
+                .then(response => response.json())
+                .then(data => {
+                    const mentors = data.map(item => item.mentor);
+                    const totalFees = data.map(item => item.total_fee);
+
+                    const ctx2 = document.getElementById('mentorFeeChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'bar',
+                        data: {
+                            labels: mentors,
+                            datasets: [
+                                {
+                                    label: 'Total Fee',
+                                    data: totalFees,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching data for mentor fees:', error));
+        });
+    </script>
+</body>
+</html>
